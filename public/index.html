@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Claims Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: #f5f5f7;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .left-panel {
+            width: 340px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .status-header {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #1d1d1f;
+        }
+
+        .status-list {
+            flex: 1;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .status-item.completed .status-dot {
+            background: #34c759;
+        }
+
+        .status-item.active .status-dot {
+            background: #ff9500;
+        }
+
+        .status-item.pending .status-dot {
+            background: #ff3b30;
+        }
+
+        .status-item.inactive .status-dot {
+            background: #d1d1d6;
+        }
+
+        .status-label {
+            font-size: 16px;
+            color: #86868b;
+            transition: color 0.3s ease;
+        }
+
+        .status-item.completed .status-label,
+        .status-item.active .status-label {
+            color: #1d1d1f;
+        }
+
+        .copyright {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 40px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            background: #f5f5f7;
+        }
+
+        .view {
+            display: none;
+            text-align: center;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .view.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-title {
+            font-size: 56px;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 20px;
+            letter-spacing: -1.5px;
+        }
+
+        .main-description {
+            font-size: 18px;
+            color: #6e6e73;
+            margin-bottom: 50px;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            background: #1d1d1f;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #2d2d2f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d1d6;
+            border-radius: 20px;
+            padding: 80px 40px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .upload-area.dragover {
+            border-color: #0071e3;
+            background: #f0f7ff;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            color: #86868b;
+            margin-bottom: 20px;
+        }
+
+        .upload-text.has-file {
+            color: #1d1d1f;
+            font-weight: 500;
+        }
+
+        .btn-choose-file {
+            background: #1d1d1f;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-choose-file:hover {
+            background: #2d2d2f;
+            transform: translateY(-2px);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn-submit {
+            background: #1d1d1f;
+            color: white;
+            border: none;
+            padding: 16px 60px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: #2d2d2f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .webhook-config {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            z-index: 100;
+        }
+
+        .webhook-config label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6e6e73;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .webhook-config input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .webhook-config input:focus {
+            outline: none;
+            border-color: #0071e3;
+        }
+
+        .btn-reset {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #1d1d1f;
+            border: 1px solid #d2d2d7;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .btn-reset:hover {
+            background: #f5f5f7;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: left;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-box h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #6e6e73;
+        }
+
+        .products-container {
+            margin-bottom: 30px;
+        }
+
+        .products-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .product-button {
+            background: white;
+            border: 2px solid #d2d2d7;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1d1d1f;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .product-button:hover {
+            border-color: #1d1d1f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-button.selected {
+            background: #1d1d1f;
+            color: white;
+            border-color: #1d1d1f;
+        }
+
+        .product-button.selected:before {
+            content: '✓ ';
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div>
+                <div class="status-header">Status</div>
+                <div class="status-list">
+                    <div class="status-item inactive" data-status="workflow-started">
+                        <div class="status-dot"></div>
+                        <div class="status-label">Workflow Started</div>
+                    </div>
+                    <div class="status-item inactive" data-status="file-upload">
+                        <div class="status-dot"></div>
+                        <div class="status-label">File Upload</div>
+                    </div>
+                    <div class="status-item inactive" data-status="submit-issue">
+                        <div class="status-dot"></div>
+                        <div class="status-label">Submit Issue</div>
+                    </div>
+                    <div class="status-item inactive" data-status="complete">
+                        <div class="status-dot"></div>
+                        <div class="status-label">Complete</div>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">© 2025 AI Claims</div>
+        </div>
+
+        <div class="right-panel">
+            <div class="view active" id="view-start">
+                <h1 class="main-title">AI Claims Portal</h1>
+                <p class="main-description">Start a new claim request to initialize the AI workflow.</p>
+                <button class="btn-primary" onclick="generateClaim()">
+                    <span>🔖</span>
+                    Generate New Claim
+                </button>
+            </div>
+
+            <div class="view" id="view-upload">
+                <h1 class="main-title">AI Claims Portal</h1>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text" id="uploadText">Drag and drop your invoice here</div>
+                    <button class="btn-choose-file" onclick="document.getElementById('fileInput').click()">
+                        Choose File
+                    </button>
+                    <input type="file" id="fileInput" class="file-input" onchange="handleFileSelect(event)">
+                </div>
+                <button class="btn-submit" id="btnSubmit" onclick="submitFile()" disabled>
+                    Submit
+                </button>
+            </div>
+
+            <div class="view" id="view-products">
+                <h1 class="main-title">AI Claims Portal</h1>
+                
+                <div class="summary-box">
+                    <h3>Invoice Summary</h3>
+                    <p id="summaryText"></p>
+                </div>
+
+                <div class="products-container">
+                    <div class="products-title">Select Products to Claim</div>
+                    <div class="products-grid" id="productsGrid"></div>
+                </div>
+
+                <button class="btn-submit" id="btnSubmitProducts" onclick="submitProducts()" disabled>
+                    Submit Selected Products
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-reset" onclick="resetClaim()">🔄 Reset</button>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">Initializing workflow...</div>
+        </div>
+    </div>
+
+    <div class="webhook-config">
+        <label for="webhookUrl">n8n Webhook URL</label>
+        <input 
+            type="text" 
+            id="webhookUrl" 
+            value="https://n8nserver.wbcpartners.com/webhook-test/e1bf4e3c-bf0c-436f-b5c3-9205357857cc"
+            placeholder="https://your-n8n-server.com/webhook/..."
+        >
+    </div>
+
+    <script>
+        let resumeUrl = null;
+        let selectedFile = null;
+        let selectedProducts = [];
+
+        function updateStatus(currentStep) {
+            const steps = ['workflow-started', 'file-upload', 'submit-issue', 'complete'];
+            const currentIndex = steps.indexOf(currentStep);
+
+            document.querySelectorAll('.status-item').forEach(item => {
+                const itemStatus = item.getAttribute('data-status');
+                const itemIndex = steps.indexOf(itemStatus);
+                
+                let statusClass = 'inactive';
+                
+                if (itemIndex < currentIndex) {
+                    statusClass = 'completed';
+                } else if (itemIndex === currentIndex) {
+                    statusClass = 'active';
+                } else {
+                    statusClass = 'inactive';
+                }
+                
+                item.className = 'status-item ' + statusClass;
+            });
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function showLoading(message = 'Processing...') {
+            document.getElementById('loadingText').textContent = message;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function resetClaim() {
+            resumeUrl = null;
+            selectedFile = null;
+            selectedProducts = [];
+            document.getElementById('fileInput').value = '';
+            document.querySelectorAll('.status-item').forEach(item => {
+                item.className = 'status-item inactive';
+            });
+            showView('view-start');
+            updateFileDisplay();
+        }
+
+        function toggleProduct(productId, productValue) {
+            const index = selectedProducts.findIndex(p => p.id === productId);
+            
+            if (index > -1) {
+                selectedProducts.splice(index, 1);
+            } else {
+                selectedProducts.push({ id: productId, value: productValue });
+            }
+            
+            const button = document.querySelector(`[data-product-id="${productId}"]`);
+            button.classList.toggle('selected');
+            
+            const btnSubmit = document.getElementById('btnSubmitProducts');
+            btnSubmit.disabled = selectedProducts.length === 0;
+        }
+
+        function displayProducts(data) {
+            document.getElementById('summaryText').textContent = data.message || data.summary || '';
+            
+            const productsGrid = document.getElementById('productsGrid');
+            productsGrid.innerHTML = '';
+            
+            if (data.products && data.products.length > 0) {
+                data.products.forEach(product => {
+                    const button = document.createElement('button');
+                    button.className = 'product-button';
+                    button.setAttribute('data-product-id', product.id);
+                    button.textContent = product.label;
+                    button.onclick = () => toggleProduct(product.id, product.value);
+                    productsGrid.appendChild(button);
+                });
+            }
+            
+            showView('view-products');
+        }
+
+        async function submitProducts() {
+            if (selectedProducts.length === 0 || !resumeUrl) {
+                alert('Please select at least one product');
+                return;
+            }
+
+            try {
+                showLoading('Submitting selected products...');
+
+                const response = await fetch(`/api/resume-workflow?resumeUrl=${encodeURIComponent(resumeUrl)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        selectedProducts: selectedProducts.map(p => p.value)
+                    })
+                });
+
+                const data = await response.json();
+                
+                console.log('Products submission response:', data);
+                
+                hideLoading();
+                updateStatus('complete');
+                
+                alert('Products submitted successfully!');
+                
+                if (data.resumeUrl) {
+                    resumeUrl = data.resumeUrl;
+                }
+            } catch (error) {
+                hideLoading();
+                alert('Error submitting products: ' + error.message);
+                console.error('Error:', error);
+            }
+        }
+
+        async function generateClaim() {
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            
+            if (!webhookUrl) {
+                alert('Please enter a webhook URL in the bottom right corner');
+                return;
+            }
+
+            try {
+                showLoading('Starting claim process...');
+
+                const response = await fetch(`/api/trigger-workflow?webhookUrl=${encodeURIComponent(webhookUrl)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'start_claim' })
+                });
+
+                const data = await response.json();
+                
+                console.log('Workflow response:', data);
+                
+                if (data.resumeUrl) {
+                    resumeUrl = data.resumeUrl;
+                    hideLoading();
+                    showView('view-upload');
+                    updateStatus('file-upload');
+                } else {
+                    hideLoading();
+                    alert('Workflow started but no resumeUrl received');
+                }
+            } catch (error) {
+                hideLoading();
+                alert('Error: ' + error.message);
+                console.error('Error:', error);
+            }
+        }
+
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                selectedFile = files[0];
+                updateFileDisplay();
+            }
+        });
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                selectedFile = files[0];
+                updateFileDisplay();
+            }
+        }
+
+        function updateFileDisplay() {
+            const uploadText = document.getElementById('uploadText');
+            const btnSubmit = document.getElementById('btnSubmit');
+            
+            if (selectedFile) {
+                uploadText.textContent = `Selected: ${selectedFile.name}`;
+                uploadText.classList.add('has-file');
+                btnSubmit.disabled = false;
+                updateStatus('submit-issue');
+            } else {
+                uploadText.textContent = 'Drag and drop your invoice here';
+                uploadText.classList.remove('has-file');
+                btnSubmit.disabled = true;
+            }
+        }
+
+        async function submitFile() {
+            if (!selectedFile || !resumeUrl) {
+                alert('Please select a file first');
+                return;
+            }
+
+            try {
+                showLoading('Uploading file...');
+
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                const response = await fetch(`/api/resume-workflow?resumeUrl=${encodeURIComponent(resumeUrl)}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                console.log('Upload response:', data);
+                
+                hideLoading();
+                
+                if (data.products && data.products.length > 0) {
+                    resumeUrl = data.resumeUrl;
+                    selectedProducts = [];
+                    displayProducts(data);
+                    updateStatus('submit-issue');
+                } else if (data.resumeUrl) {
+                    resumeUrl = data.resumeUrl;
+                    updateStatus('complete');
+                    alert('File uploaded successfully! Next step available.');
+                } else {
+                    updateStatus('complete');
+                    alert('File uploaded successfully!');
+                }
+            } catch (error) {
+                hideLoading();
+                alert('Error uploading file: ' + error.message);
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
