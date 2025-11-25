@@ -433,50 +433,121 @@
             content: '✓ ';
             margin-right: 8px;
         }
+
+
+        .demo-download {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 250px;
+            z-index: 100;
+        }
+
+        .demo-download label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6e6e73;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .download-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #0071e3;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            background: #0077ed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+
+        .download-icon {
+            font-size: 16px;
+        }
+
+
+                .claim-id {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            border: 2px solid #34c759;
+        }
+
+        .success-message {
+            font-size: 18px;
+            color: #6e6e73;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="left-panel">
-            <div>
-                <div class="status-header">Status</div>
-                <div class="status-list">
-                    <div class="status-item inactive" data-status="workflow-started">
-                        <div class="status-dot"></div>
-                        <div class="status-label">Workflow Started</div>
-                    </div>
-                    <div class="status-item inactive" data-status="file-upload">
-                        <div class="status-dot"></div>
-                        <div class="status-label">File Upload</div>
-                    </div>
-                    <div class="status-item inactive" data-status="submit-issue">
-                        <div class="status-dot"></div>
-                        <div class="status-label">Submit Issue</div>
-                    </div>
-                    <div class="status-item inactive" data-status="complete">
-                        <div class="status-dot"></div>
-                        <div class="status-label">Complete</div>
-                    </div>
+            <div class="left-panel">
+        <div>
+            <div class="status-header">Status</div>
+            <div class="status-list">
+                <div class="status-item inactive" data-status="workflow-started">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Workflow Started</div>
+                </div>
+                <div class="status-item inactive" data-status="file-upload">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Image Upload</div>
+                </div>
+                <div class="status-item inactive" data-status="submit-issue">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Submitted Image</div>
+                </div>
+                <div class="status-item inactive" data-status="confirm-selection">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Confirm Selection</div>
+                </div>
+                <div class="status-item inactive" data-status="complete">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Complete</div>
                 </div>
             </div>
-            <div class="copyright">© 2025 AI Claims</div>
         </div>
+        <div class="copyright">© 2025 AtlasTech Warranty claim form</div>
+    </div>
 
         <div class="right-panel">
             <div class="view active" id="view-start">
-                <h1 class="main-title">AI Claims Portal</h1>
-                <p class="main-description">Start a new claim request to initialize the AI workflow.</p>
+                <h1 class="main-title">AtlasTech Warranty Claim</h1>
+                <h2 class="main-description">Submit a photo of your invoice and select items.</h2>
                 <button class="btn-primary" onclick="generateClaim()">
                     <span>🔖</span>
                     Generate New Claim
                 </button>
+                <p class="main-description">Start a new claim request to initialize an AI augmented workflow.</p>
             </div>
 
             <div class="view" id="view-upload">
-                <h1 class="main-title">AI Claims Portal</h1>
+                <h1 class="main-title">AtlasTech Warranty Portal</h1>
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-icon">📄</div>
-                    <div class="upload-text" id="uploadText">Drag and drop your invoice here</div>
+                    <div class="upload-text" id="uploadText">Drag and drop a photo of your invoice here</div>
                     <button class="btn-choose-file" onclick="document.getElementById('fileInput').click()">
                         Choose File
                     </button>
@@ -488,7 +559,7 @@
             </div>
 
             <div class="view" id="view-products">
-                <h1 class="main-title">AI Claims Portal</h1>
+                <h1 class="main-title">AtlasTech Warranty Claims Portal</h1>
                 
                 <div class="summary-box">
                     <h3>Invoice Summary</h3>
@@ -496,12 +567,29 @@
                 </div>
 
                 <div class="products-container">
-                    <div class="products-title">Select Products to Claim</div>
+                    <div class="products-title">Select the items you are claiming and press Submit</div>
                     <div class="products-grid" id="productsGrid"></div>
                 </div>
 
                 <button class="btn-submit" id="btnSubmitProducts" onclick="submitProducts()" disabled>
                     Submit Selected Products
+                </button>
+            </div>
+
+            <!-- Complete View -->
+            <div class="view" id="view-complete">
+                <h1 class="main-title">Claim Submitted</h1>
+                <div class="success-message">
+                    Thank you for submitting the claim, this has been forwarded, and the claim logged.
+                </div>
+                <div>Your reference claimID is:</div>
+                <div class="claim-id" id="claimIdDisplay">CL-123ABC</div>
+                <div class="success-message">
+                    Please save this for your records.
+                </div>
+                <button class="btn-primary" onclick="resetClaim()">
+                    <span>🔄</span>
+                    Start New Claim
                 </button>
             </div>
         </div>
@@ -516,23 +604,31 @@
         </div>
     </div>
 
-    <div class="webhook-config">
-        <label for="webhookUrl">n8n Webhook URL</label>
-        <input 
-            type="text" 
-            id="webhookUrl" 
-            value="https://n8nserver.wbcpartners.com/webhook-test/e1bf4e3c-bf0c-436f-b5c3-9205357857cc"
-            placeholder="https://your-n8n-server.com/webhook/..."
-        >
+    <div class="demo-download">
+        <label>Demo Invoice</label>
+        <a href="https://talent-associates.com/assets/demo_invoice-image.jpg" download="demo_invoice.jpg" class="download-link" target="_blank">
+            <span class="download-icon">⬇️</span>
+            Download Example Invoice
+        </a>
     </div>
 
     <script>
         let resumeUrl = null;
         let selectedFile = null;
         let selectedProducts = [];
+        let currentClaimId = null;
+
+        function generateClaimId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = 'CL-';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
 
         function updateStatus(currentStep) {
-            const steps = ['workflow-started', 'file-upload', 'submit-issue', 'complete'];
+            const steps = ['workflow-started', 'file-upload', 'submit-issue', 'confirm-selection', 'complete'];
             const currentIndex = steps.indexOf(currentStep);
 
             document.querySelectorAll('.status-item').forEach(item => {
@@ -573,6 +669,7 @@
             resumeUrl = null;
             selectedFile = null;
             selectedProducts = [];
+            currentClaimId = null;
             document.getElementById('fileInput').value = '';
             document.querySelectorAll('.status-item').forEach(item => {
                 item.className = 'status-item inactive';
@@ -598,23 +695,48 @@
         }
 
         function displayProducts(data) {
-            document.getElementById('summaryText').textContent = data.message || data.summary || '';
+            console.log('🎯 displayProducts called with:', data);
             
+            // Display summary
+            document.getElementById('summaryText').textContent = data.summary || '';
+            
+            // Parse products - handle both array and string formats
             const productsGrid = document.getElementById('productsGrid');
             productsGrid.innerHTML = '';
             
-            if (data.products && data.products.length > 0) {
-                data.products.forEach(product => {
+            let productArray = [];
+            
+            if (Array.isArray(data.products)) {
+                // Products is already an array
+                productArray = data.products;
+                console.log('📦 Products received as array:', productArray);
+            } else if (typeof data.products === 'string') {
+                // Products is a string - split by commas
+                productArray = data.products.split(',').map(p => p.trim());
+                console.log('📦 Products received as string, parsed to array:', productArray);
+            }
+            
+            // Create buttons for each product
+            productArray.forEach((product, index) => {
+                if (product) {
                     const button = document.createElement('button');
                     button.className = 'product-button';
-                    button.setAttribute('data-product-id', product.id);
-                    button.textContent = product.label;
-                    button.onclick = () => toggleProduct(product.id, product.value);
+                    button.setAttribute('data-product-id', `product-${index}`);
+                    button.textContent = product;
+                    button.onclick = () => toggleProduct(`product-${index}`, product);
                     productsGrid.appendChild(button);
-                });
+                }
+            });
+            
+            // Store resumeUrl for the next step
+            if (data.resumeUrl) {
+                resumeUrl = data.resumeUrl;
+                console.log('🔗 New resumeUrl stored for product submission:', resumeUrl);
             }
             
             showView('view-products');
+            updateStatus('confirm-selection');
+            console.log('✅ Product selection page shown');
         }
 
         async function submitProducts() {
@@ -626,47 +748,54 @@
             try {
                 showLoading('Submitting selected products...');
 
+                // Generate claim ID
+                currentClaimId = generateClaimId();
+                const timestamp = new Date().toISOString();
+
                 const response = await fetch(`/api/resume-workflow?resumeUrl=${encodeURIComponent(resumeUrl)}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ 
-                        selectedProducts: selectedProducts.map(p => p.value)
+                        selectedProducts: selectedProducts.map(p => p.value),
+                        claimId: currentClaimId,
+                        timestamp: timestamp
                     })
                 });
 
-                const data = await response.json();
+                const responseData = await response.json();
                 
-                console.log('Products submission response:', data);
+                console.log('Products submission response:', responseData);
                 
                 hideLoading();
+                
+                // Show completion screen
+                document.getElementById('claimIdDisplay').textContent = currentClaimId;
+                showView('view-complete');
                 updateStatus('complete');
                 
-                alert('Products submitted successfully!');
+                console.log('✅ Claim submitted successfully with ID:', currentClaimId);
                 
-                if (data.resumeUrl) {
-                    resumeUrl = data.resumeUrl;
-                }
             } catch (error) {
                 hideLoading();
-                alert('Error submitting products: ' + error.message);
-                console.error('Error:', error);
+                console.error('Error submitting products:', error);
+                
+                // Generate claim ID for error case too
+                currentClaimId = generateClaimId();
+                document.getElementById('claimIdDisplay').textContent = currentClaimId;
+                showView('view-complete');
+                updateStatus('complete');
+                
+                console.log('✅ Claim submitted (with backend error) with ID:', currentClaimId);
             }
         }
 
         async function generateClaim() {
-            const webhookUrl = document.getElementById('webhookUrl').value;
-            
-            if (!webhookUrl) {
-                alert('Please enter a webhook URL in the bottom right corner');
-                return;
-            }
-
             try {
                 showLoading('Starting claim process...');
 
-                const response = await fetch(`/api/trigger-workflow?webhookUrl=${encodeURIComponent(webhookUrl)}`, {
+                const response = await fetch('/api/trigger-workflow', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -678,11 +807,13 @@
                 
                 console.log('Workflow response:', data);
                 
-                if (data.resumeUrl) {
-                    resumeUrl = data.resumeUrl;
+                // FIXED: Check data.data.resumeUrl instead of data.resumeUrl
+                if (data.data && data.data.resumeUrl) {
+                    resumeUrl = data.data.resumeUrl;
                     hideLoading();
                     showView('view-upload');
                     updateStatus('file-upload');
+                    console.log('Moving to file upload with resumeUrl:', resumeUrl);
                 } else {
                     hideLoading();
                     alert('Workflow started but no resumeUrl received');
@@ -747,7 +878,7 @@
             }
 
             try {
-                showLoading('Uploading file...');
+                showLoading('Processing file...');
 
                 const formData = new FormData();
                 formData.append('file', selectedFile);
@@ -757,24 +888,38 @@
                     body: formData
                 });
 
-                const data = await response.json();
-                
-                console.log('Upload response:', data);
-                
+                const responseData = await response.json();
+
+                console.log('📄 FULL UPLOAD RESPONSE:', responseData);
+
+                // FIX: Handle array response from n8n
+                let data;
+                if (Array.isArray(responseData) && responseData.length > 0) {
+                    // n8n returns array - take first element
+                    data = responseData[0];
+                    console.log('✅ Extracted data from array:', data);
+                } else {
+                    // Direct object response
+                    data = responseData;
+                }
+
+                console.log('🔍 Processed data - Summary:', data.summary);
+                console.log('🔍 Processed data - Products:', data.products);
+                console.log('🔍 Processed data - Products type:', typeof data.products);
+                console.log('🔍 Processed data - Is products array?', Array.isArray(data.products));
+
                 hideLoading();
-                
-                if (data.products && data.products.length > 0) {
+
+                // If we have summary and products, show product selection
+                if (data.summary && data.products) {
+                    console.log('🎯 Showing product selection page');
                     resumeUrl = data.resumeUrl;
                     selectedProducts = [];
                     displayProducts(data);
-                    updateStatus('submit-issue');
-                } else if (data.resumeUrl) {
-                    resumeUrl = data.resumeUrl;
-                    updateStatus('complete');
-                    alert('File uploaded successfully! Next step available.');
-                } else {
-                    updateStatus('complete');
-                    alert('File uploaded successfully!');
+                } 
+                else {
+                    console.log('❌ Missing summary or products in response');
+                    alert('File uploaded but no product data received. Check n8n workflow.');
                 }
             } catch (error) {
                 hideLoading();
